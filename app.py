@@ -33,11 +33,11 @@ if st.sidebar.button("Predict Fetal Age"):
 if st.sidebar.button("About"):
     switch_page("About")
 st.sidebar.markdown("---")
-st.sidebar.write("Built with ❤️ using Streamlit")
+st.sidebar.write("App built using Streamlit")
 
 # ---------------- OVERVIEW PAGE ----------------
 if st.session_state.current_page == "Overview":
-    st.title("📘 Overview – Fetal Age Prediction")
+    st.title("👩‍🍼 Overview – Fetal Age Prediction")
     st.markdown("""
     **Fetal Age Prediction** is a medical estimation technique used to assess the gestational age of a fetus based on various biometric and maternal health inputs.
     
@@ -82,7 +82,12 @@ elif st.session_state.current_page == "Predict":
                 float(hc_input), float(ac_input), float(efw_input), float(lmp_input)
             ]])
             prediction = model.predict(features)
-            st.success(f"🍼 Predicted Gestational Age: **{prediction[0]:.0f} days**")
+            st.success(f"🧒 Predicted Gestational Age: **{prediction[0]:.0f} days**")
+            st.image(
+    "https://cdn.pixabay.com/photo/2020/03/23/19/33/ultrasound-4962513_960_720.jpg",
+    caption="Ultrasound Image of Fetus",
+    width=350
+)
         except ValueError:
             st.error("Please enter valid numeric values for all fields.")
 
@@ -93,7 +98,5 @@ elif st.session_state.current_page == "About":
     This app uses a machine learning model trained on real ultrasound data and maternal health inputs to predict the fetal gestational age (in days).
     
     It uses 8 input features, including maternal age, biometric scan data, and estimated fetal weight.
-
-    ---
-    **Disclaimer**: This tool is for educational use only. Not intended for clinical decision-making.
+    
     """)
