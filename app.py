@@ -61,9 +61,7 @@ elif st.session_state.current_page == "Predict":
     st.markdown("Enter the 8 clinical and ultrasound values below to predict fetal gestational age (in days).")
 
     st.header("Enter Inputs")
-
-    
-col1, col2 = st.columns(2)
+    col1, col2 = st.columns(2)
     with col1:
         age_input = st.text_input("Maternal Age (years)")
         hem_input = st.text_input("Hemoglobin Level (g/dL)")
