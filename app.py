@@ -2,7 +2,7 @@ import streamlit as st
 import pickle
 import numpy as np
 
-# Configure the page
+# Page setup
 st.set_page_config(
     page_title="Fetal Age Predictor",
     page_icon="🧬",
@@ -10,22 +10,24 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Load the trained model
+# Load model
 @st.cache_resource
 def load_model():
     return pickle.load(open('fetal_age_model.pkl', 'rb'))
 
 model = load_model()
 
-# Navigation state
+# Session state
 if "current_page" not in st.session_state:
-    st.session_state.current_page = "Predict"
+    st.session_state.current_page = "Overview"
 
 def switch_page(page: str):
     st.session_state.current_page = page
 
 # Sidebar navigation
 st.sidebar.title("Navigation")
+if st.sidebar.button("Overview"):
+    switch_page("Overview")
 if st.sidebar.button("Predict Fetal Age"):
     switch_page("Predict")
 if st.sidebar.button("About"):
@@ -33,46 +35,65 @@ if st.sidebar.button("About"):
 st.sidebar.markdown("---")
 st.sidebar.write("Built with ❤️ using Streamlit")
 
-# --- Predict Page ---
-if st.session_state.current_page == "Predict":
-    st.title("Fetal Age Prediction App")
-    st.markdown("Enter the 8 clinical and ultrasound measurements below to predict fetal gestational age in **days**.")
+# ---------------- OVERVIEW PAGE ----------------
+if st.session_state.current_page == "Overview":
+    st.title("📘 Overview – Fetal Age Prediction")
+    st.markdown("""
+    **Fetal Age Prediction** is a medical estimation technique used to assess the gestational age of a fetus based on various biometric and maternal health inputs.
+    
+    In this application, we use a machine learning model trained on features such as:
+    
+    - **Maternal Age**
+    - **Hemoglobin Level**
+    - **Biparietal Diameter (BPD)**
+    - **Femur Length (FFL)**
+    - **Head Circumference (HC)**
+    - **Abdominal Circumference (AC)**
+    - **Estimated Fetal Weight (EFW)**
+    - **Days Since Last Menstrual Period (LMP)**
+    
+    This prediction helps healthcare providers estimate how far along a pregnancy is and guide prenatal care decisions.
+    """)
 
-    st.header("Enter Input Features")
+# ---------------- PREDICT PAGE ----------------
+elif st.session_state.current_page == "Predict":
+    st.title("Fetal Age Prediction App")
+    st.markdown("Enter the 8 clinical and ultrasound values below to predict fetal gestational age (in days).")
+
+    st.header("Enter Inputs")
 
     col1, col2 = st.columns(2)
     with col1:
-        age = st.number_input("Maternal Age (years)", min_value=10.0, max_value=60.0)
-        hem = st.number_input("Hemoglobin Level (g/dL)", min_value=5.0, max_value=20.0)
-        bpd = st.number_input("Biparietal Diameter (mm)", min_value=0.0, max_value=100.0)
-        ffl = st.number_input("Femur Length (mm)", min_value=0.0, max_value=100.0)
+        age_input = st.text_input("Maternal Age (years)")
+        hem_input = st.text_input("Hemoglobin Level (g/dL)")
+        bpd_input = st.text_input("Biparietal Diameter (mm)")
+        ffl_input = st.text_input("Femur Length (mm)")
 
     with col2:
-        hc = st.number_input("Head Circumference (mm)", min_value=0.0, max_value=500.0)
-        ac = st.number_input("Abdominal Circumference (mm)", min_value=0.0, max_value=500.0)
-        efw = st.number_input("Estimated Fetal Weight (g)", min_value=0.0, max_value=1000.0)
-        lmp = st.number_input("Days Since Last Menstrual Period (LMP)", min_value=0.0, max_value=300.0)
+        hc_input = st.text_input("Head Circumference (mm)")
+        ac_input = st.text_input("Abdominal Circumference (mm)")
+        efw_input = st.text_input("Estimated Fetal Weight (g)")
+        lmp_input = st.text_input("Days Since Last Menstrual Period (LMP)")
 
     if st.button("Predict"):
-        features = np.array([[age, hem, bpd, ffl, hc, ac, efw, lmp]])
-        prediction = model.predict(features)
-        st.success(f"🍼 Predicted Gestational Age: **{prediction[0]:.0f} days**")
+        try:
+            features = np.array([[
+                float(age_input), float(hem_input), float(bpd_input), float(ffl_input),
+                float(hc_input), float(ac_input), float(efw_input), float(lmp_input)
+            ]])
+            prediction = model.predict(features)
+            st.success(f"🍼 Predicted Gestational Age: **{prediction[0]:.0f} days**")
+        except ValueError:
+            st.error("Please enter valid numeric values for all fields.")
 
-# --- About Page ---
+# ---------------- ABOUT PAGE ----------------
 elif st.session_state.current_page == "About":
     st.title("About This App")
     st.markdown("""
-    This app predicts **fetal gestational age (in days)** based on 8 ultrasound and maternal clinical features:
+    This app uses a machine learning model trained on real ultrasound data and maternal health inputs to predict the fetal gestational age (in days).
+    
+    It uses 8 input features, including maternal age, biometric scan data, and estimated fetal weight.
 
-    - **Age**: Maternal Age (years)  
-    - **Hem**: Hemoglobin Level  
-    - **BPD**: Biparietal Diameter  
-    - **FFL**: Femur Length  
-    - **HC**: Head Circumference  
-    - **AC**: Abdominal Circumference  
-    - **EFW**: Estimated Fetal Weight  
-    - **LMP**: Days Since Last Menstrual Period
-
-    The model used is a trained `RandomForestRegressor.
-
+    ---
+    **Disclaimer**: This tool is for educational use only. Not intended for clinical decision-making.
     """)
