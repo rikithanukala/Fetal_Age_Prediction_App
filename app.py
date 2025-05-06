@@ -62,18 +62,23 @@ elif st.session_state.current_page == "Predict":
 
     st.header("Enter Inputs")
 
+    
+use_sample = st.button("📋 Use Sample Data")
+
+    
     col1, col2 = st.columns(2)
     with col1:
-        age_input = st.text_input("Maternal Age (years)")
-        hem_input = st.text_input("Hemoglobin Level (g/dL)")
-        bpd_input = st.text_input("Biparietal Diameter (mm)")
-        ffl_input = st.text_input("Femur Length (mm)")
+        age_input = st.text_input("Maternal Age (years)", value="28" if use_sample else "", help="Age of the mother")
+        hem_input = st.text_input("Hemoglobin Level (g/dL)", value="12.5" if use_sample else "", help="Hemoglobin level of the mother")
+        bpd_input = st.text_input("Biparietal Diameter (mm)", value="85.0" if use_sample else "", help="Width of fetal skull")
+        ffl_input = st.text_input("Femur Length (mm)", value="65.0" if use_sample else "", help="Length of fetal femur")
 
     with col2:
-        hc_input = st.text_input("Head Circumference (mm)")
-        ac_input = st.text_input("Abdominal Circumference (mm)")
-        efw_input = st.text_input("Estimated Fetal Weight (g)")
-        lmp_input = st.text_input("Days Since Last Menstrual Period (LMP)")
+        hc_input = st.text_input("Head Circumference (mm)", value="320.0" if use_sample else "", help="Fetal head circumference")
+        ac_input = st.text_input("Abdominal Circumference (mm)", value="280.0" if use_sample else "", help="Fetal abdomen circumference")
+        efw_input = st.text_input("Estimated Fetal Weight (g)", value="1500.0" if use_sample else "", help="Weight of the fetus in grams")
+        lmp_input = st.text_input("Days Since Last Menstrual Period (LMP)", value="200.0" if use_sample else "", help="Days since the last menstrual period")
+
 
     if st.button("Predict"):
         try:
@@ -83,11 +88,6 @@ elif st.session_state.current_page == "Predict":
             ]])
             prediction = model.predict(features)
             st.success(f"🧒 Predicted Gestational Age: **{prediction[0]:.0f} days**")
-            st.image(
-    "https://cdn.pixabay.com/photo/2020/03/23/19/33/ultrasound-4962513_960_720.jpg",
-    caption="Ultrasound Image of Fetus",
-    width=350
-)
         except ValueError:
             st.error("Please enter valid numeric values for all fields.")
 
